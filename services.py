@@ -5,19 +5,6 @@ load_dotenv()
 
 print(os.getenv("OPENWEATHER_API_KEY"))
 
-# def get_weather(location):
-#     key=os.getenv("WEATHER_API_KEY")
-#     #if not key: return {"ok":False,"error":"WEATHER_API_KEY is missing. Add it to your .env file and restart the app."}
-#     try:
-#         r=requests.get("https://api.openweathermap.org/data/2.5/weather",params={"key":key,"q":location,"aqi":"no"},timeout=12)
-#         if r.status_code != 200:
-#             try: detail=r.json().get("error",{}).get("message","Weather provider request failed.")
-#             except Exception: detail="Weather provider request failed."
-#             return {"ok":False,"error":f"Weather API error: {detail}"}
-#         d=r.json(); cur=d["current"]
-#         return {"ok":True,"location":d["location"]["name"]+", "+d["location"]["country"],"temp_c":cur["temp_c"],"humidity":cur["humidity"],"rain_mm":cur["precip_mm"],"wind_kph":cur["wind_kph"],"condition":cur["condition"]["text"]}
-#     except requests.RequestException: return {"ok":False,"error":"Could not reach the weather service. Check your internet connection and API key."}
-
 
 def get_weather(location):
     key = os.getenv("OPENWEATHER_API_KEY")
@@ -81,7 +68,7 @@ def recommend_crop(n,p,k,ph,temp,humidity,rainfall):
     ]
     # Soil nutrient values are surfaced as context, but crop suitability is not a substitute for a validated local model.
     return [{"crop":x[0],"reason":x[2]+f" Soil readings N={n}, P={p}, K={k}, pH={ph:.1f} should be checked against local crop requirements."} for x in sorted(crops,key=lambda z:z[1])[:3]]
-
+ 
 def recommend_irrigation(crop,soil,stage,moisture,weather=None):
     weather=weather or {}
     if moisture<25: msg="Soil moisture is low. Check root-zone moisture and consider irrigating soon if the crop is not waterlogged."
@@ -103,6 +90,7 @@ def recommend_fertilizer(crop,stage,soil_status,weather=None):
     extra=" Current observed rainfall is notable; avoid applying fertilizer immediately before heavy rain if runoff/leaching risk is high." if rain>=5 else ""
     return f"**{crop}, stage: {stage}.** {advice[soil_status]}{extra} Exact fertilizer quantity depends on soil-test values, cultivar, yield target and local agricultural guidance."
 
+
 def forecast_mandi(crop,market):
     # Stable illustrative baseline series. Replace with verified market-wise AGMARKNET/eNAM data for real forecasting.
     base={"Rice":2400,"Wheat":2600,"Maize":2200,"Tomato":2850,"Cotton":7200,"Sugarcane":350,"Groundnut":5800,"Millet":2700}.get(crop,2500)
@@ -112,6 +100,7 @@ def forecast_mandi(crop,market):
         price=round(base*(1+0.012*i+0.018*((i%3)-1)),2)
         values.append({"Date":d.isoformat(),"Crop":crop,"Market":market,"Predicted price (₹/quintal)":price})
     return pd.DataFrame(values)
+
 
 def answer_farmer(prompt,farmer,weather=None):
     key=os.getenv("GROQ_API_KEY")
