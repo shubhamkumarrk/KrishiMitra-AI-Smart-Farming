@@ -82,6 +82,8 @@ if page=="🏡 Dashboard":
     for col,(emoji,title,desc) in zip(cols,[("🌦️","Weather","Current conditions"),("🌱","Crop recommendation","Soil + weather"),("📈","Mandi forecast","Indicative price trend")]):
         with col:
             st.markdown(f'<div class="metric-card"><h3>{emoji} {title}</h3><p>{desc}</p></div>',unsafe_allow_html=True)
+
+
 elif page=="🌦️ Weather":
     st.subheader("Live weather")
     location=st.text_input("Location for weather",value=farmer["location"])
@@ -99,6 +101,8 @@ elif page=="🌦️ Weather":
         else: st.error(weather["error"])
     if st.session_state.get("weather"):
         st.caption("Weather data can be used in the recommendation modules during this session.")
+
+
 elif page=="🌱 Crop recommendation":
     st.subheader("Weather-aware crop recommendation")
     w=st.session_state.get("weather",{})
@@ -114,6 +118,8 @@ elif page=="🌱 Crop recommendation":
         humidity=c.slider("Humidity %",0,100,int(w.get("humidity",65)))
         rainfall=st.number_input("Expected seasonal rainfall (mm)",0.0,3000.0,float(max(0,w.get("rain_mm",0)*30)))
         submitted=st.form_submit_button("Recommend crops",type="primary")
+
+    
     if submitted:
         recs=recommend_crop(n,p,k,ph,temp,humidity,rainfall)
         st.session_state.crop_recommendation=recs
@@ -125,6 +131,8 @@ elif page=="🌱 Crop recommendation":
         if st.button("Use selected crop for mandi forecast"):
             st.session_state.selected_crop=selected
             st.success(f"{selected} selected. Open Mandi price forecast.")
+
+
 elif page=="💧 Irrigation advice":
     st.subheader("Irrigation recommendation")
     w=st.session_state.get("weather",{})
@@ -143,6 +151,8 @@ elif page=="🧪 Fertilizer advice":
     if st.button("Prepare fertilizer guidance",type="primary"):
         st.info(recommend_fertilizer(crop,stage,soil,w))
         st.caption("Use a soil-test report and local agricultural recommendations before applying exact quantities.")
+
+
 elif page=="📈 Mandi price forecast":
     st.subheader("Indicative mandi price forecast")
     crop_default=st.session_state.get("selected_crop","Tomato")
@@ -153,20 +163,7 @@ elif page=="📈 Mandi price forecast":
         st.dataframe(df,use_container_width=True,hide_index=True)
         st.line_chart(df.set_index("Date")["Predicted price (₹/quintal)"])
         st.warning("Demonstration forecast based on seeded sample history, not live official mandi transactions. Replace with verified AGMARKNET/eNAM historical data before real-world decisions.")
-# elif page=="🩺 Plant disease detection":
-#     st.subheader("Plant disease detection")
-#     st.write("Upload a clear leaf image. The classifier downloads a pretrained model on first use; internet access is required the first time.")
-#     uploaded=st.file_uploader("Leaf image",type=["jpg","jpeg","png","webp"])
-#     if uploaded:
-#         st.image(uploaded,caption="Uploaded leaf",width=320)
-#         if st.button("Analyze leaf image",type="primary"):
-#             with st.spinner("Loading classifier and analyzing image…"):
-#                 result=predict_disease(uploaded)
-#             if result.get("ok"):
-#                 st.success(f"Prediction: {result['label']}")
-#                 st.write(f"Model confidence: {result['confidence']:.1%}")
-#                 st.warning("AI image predictions can be wrong. Verify with an agricultural expert, especially before applying pesticides.")
-#             else: st.error(result["error"])
+
 
 
 elif page == "🩺 Plant disease detection":
@@ -270,6 +267,8 @@ elif page=="🤖 Farmer assistant":
             st.markdown(answer)
         st.session_state.messages.append({"role":"assistant","content":answer})
         save_chat(farmer["id"],prompt,answer)
+
+
 elif page=="👨‍🌾 Farm profile":
     st.subheader("Farmer profile")
     st.write(f"**Name:** {farmer['name']}")
