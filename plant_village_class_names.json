@@ -1,0 +1,12 @@
+{
+    "class_dirs": [
+        "Potato___Early_blight",
+        "Potato___Late_blight",
+        "Potato___healthy"
+    ],
+    "display_names": [
+        "Potato Early blight",
+        "Potato Late blight",
+        "Potato healthy"
+    ]
+}
